@@ -4,8 +4,11 @@ import { RegisterWrapper, RegisterCard } from "./styledComponents";
 
 class Register extends Component {
   state = {
+    name: "",
+    dateOfBirth: "",
     email: "",
     password: "",
+    confirmPassword: "",
     message: ""
   };
 
@@ -18,7 +21,14 @@ class Register extends Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
-    const { email, password } = this.state;
+
+    const { name, dateOfBirth, email, password, confirmPassword } = this.state;
+
+    // Password Match Validation
+    if (password !== confirmPassword) {
+      this.setState({ message: "Passwords do not match ❌" });
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:5000/register", {
@@ -26,7 +36,12 @@ class Register extends Component {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({
+          name,
+          dateOfBirth,
+          email,
+          password
+        })
       });
 
       const data = await response.json();
@@ -38,7 +53,14 @@ class Register extends Component {
   };
 
   render() {
-    const { email, password, message } = this.state;
+    const {
+      name,
+      dateOfBirth,
+      email,
+      password,
+      confirmPassword,
+      message
+    } = this.state;
 
     const isSuccess = message.includes("Successfully");
 
@@ -50,6 +72,35 @@ class Register extends Component {
           </h3>
 
           <form onSubmit={this.handleSubmit}>
+
+            {/* Name */}
+            <div className="mb-3">
+              <label className="form-label">Full Name</label>
+              <input
+                type="text"
+                className="form-control"
+                name="name"
+                value={name}
+                onChange={this.handleChange}
+                placeholder="Enter full name"
+                required
+              />
+            </div>
+
+            {/* Date of Birth */}
+            <div className="mb-3">
+              <label className="form-label">Date of Birth</label>
+              <input
+                type="date"
+                className="form-control"
+                name="dateOfBirth"
+                value={dateOfBirth}
+                onChange={this.handleChange}
+                required
+              />
+            </div>
+
+            {/* Email */}
             <div className="mb-3">
               <label className="form-label">Email address</label>
               <input
@@ -63,6 +114,7 @@ class Register extends Component {
               />
             </div>
 
+            {/* Password */}
             <div className="mb-3">
               <label className="form-label">Password</label>
               <input
@@ -72,6 +124,20 @@ class Register extends Component {
                 value={password}
                 onChange={this.handleChange}
                 placeholder="Enter password"
+                required
+              />
+            </div>
+
+            {/* Confirm Password */}
+            <div className="mb-3">
+              <label className="form-label">Confirm Password</label>
+              <input
+                type="password"
+                className="form-control"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={this.handleChange}
+                placeholder="Confirm password"
                 required
               />
             </div>
