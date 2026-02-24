@@ -1,53 +1,44 @@
 import React, { Component } from "react";
 import { LoginBackground, LoginCard } from "./styledComponents";
+import { Link } from "react-router-dom";
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      email: "",
-      password: "",
-      message: ""
-    };
-  }
+  state = {
+    email: "",
+    password: "",
+    message: ""
+  };
 
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
-      message: ""   // 🔥 Clear message while typing
+      message: ""
     });
   };
 
-//   validateEmail = (email) => {
-//     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     return emailPattern.test(email);
-//   };
-
-  handleSubmit = async(event) => {
+  handleSubmit = async (event) => {
     event.preventDefault();
 
     const { email, password } = this.state;
 
-    try{
-      const response = await fetch("http://localhost:5000/login",
-        {
-          method: "POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body: JSON.stringify({email, password})
-        }
-      );
+    try {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
       const data = await response.json();
 
-      if (response.ok){
-        this.setState({message:data.message});
-      }else{
-        this.setState({message:data.message})
+      if (response.ok) {
+        this.setState({ message: data.message });
+      } else {
+        this.setState({ message: data.message })
       }
-    }catch(error){
-      this.setState({message:"Server Error"})
+    } catch (error) {
+      this.setState({ message: "Server Error" })
     }
   };
 
@@ -94,15 +85,17 @@ class Login extends Component {
           {/* Show message only after clicking login */}
           {message && (
             <div
-              className={`alert mt-3 text-center ${
-                message.includes("Successful")
+              className={`alert mt-3 text-center ${message.includes("Successful")
                   ? "alert-success"
                   : "alert-danger"
-              }`}
+                }`}
             >
               {message}
             </div>
           )}
+          <p>
+            New user? <Link to="/register">Register</Link>
+          </p>
         </LoginCard>
       </LoginBackground>
     );
