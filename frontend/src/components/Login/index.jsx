@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { LoginBackground, LoginCard } from "./styledComponents";
 import { Link } from "react-router-dom";
+import { withRouter } from "../WithRouter.jsx";
 
 class Login extends Component {
   state = {
@@ -33,12 +34,14 @@ class Login extends Component {
       const data = await response.json();
 
       if (response.ok) {
-        this.setState({ message: data.message });
+        localStorage.setItem("isLoggedIn", "true");
+        this.props.navigate("/home"); // Redirect
       } else {
-        this.setState({ message: data.message })
+        this.setState({ message: data.message });
       }
+
     } catch (error) {
-      this.setState({ message: "Server Error" })
+      this.setState({ message: "Server Error" });
     }
   };
 
@@ -52,47 +55,40 @@ class Login extends Component {
 
           <form onSubmit={this.handleSubmit}>
             <div className="mb-3">
-              <label className="form-label">Email</label>
+              <label>Email</label>
               <input
                 type="email"
                 className="form-control"
                 name="email"
                 value={email}
                 onChange={this.handleChange}
-                placeholder="Enter valid email"
                 required
               />
             </div>
 
             <div className="mb-3">
-              <label className="form-label">Password</label>
+              <label>Password</label>
               <input
                 type="password"
                 className="form-control"
                 name="password"
                 value={password}
                 onChange={this.handleChange}
-                placeholder="Enter password"
                 required
               />
             </div>
 
-            <button type="submit" className="btn btn-primary w-100">
+            <button className="btn btn-primary w-100">
               Login
             </button>
           </form>
 
-          {/* Show message only after clicking login */}
           {message && (
-            <div
-              className={`alert mt-3 text-center ${message.includes("Successful")
-                  ? "alert-success"
-                  : "alert-danger"
-                }`}
-            >
+            <div className="alert alert-danger mt-3 text-center">
               {message}
             </div>
           )}
+
           <p>
             New user? <Link to="/register">Register</Link>
           </p>
@@ -102,4 +98,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default withRouter(Login);
