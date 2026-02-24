@@ -2,9 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./models/user");
-
+require('node:process');
+ 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.SERVER_PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -12,7 +13,7 @@ app.use(express.json());
 
 // Connect to MongoDB
 mongoose
-  .connect("mongodb://127.0.0.1:27017/loginDB")
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected ✅"))
   .catch((err) => console.log("MongoDB Connection Failed ❌", err));
 

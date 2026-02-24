@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { RegisterWrapper, RegisterCard } from "./styledComponents";
 
 class Register extends Component {
   state = {
@@ -17,7 +18,6 @@ class Register extends Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
-
     const { email, password } = this.state;
 
     try {
@@ -40,38 +40,65 @@ class Register extends Component {
   render() {
     const { email, password, message } = this.state;
 
+    const isSuccess = message.includes("Successfully");
+
     return (
-      <div>
-        <h2>Register</h2>
+      <RegisterWrapper>
+        <RegisterCard className="card shadow p-4">
+          <h3 className="text-center text-primary mb-4">
+            Create Account
+          </h3>
 
-        <form onSubmit={this.handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={this.handleChange}
-            placeholder="Enter Email"
-            required
-          />
+          <form onSubmit={this.handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Email address</label>
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                value={email}
+                onChange={this.handleChange}
+                placeholder="Enter email"
+                required
+              />
+            </div>
 
-          <input
-            type="password"
-            name="password"
-            value={password}
-            onChange={this.handleChange}
-            placeholder="Enter Password"
-            required
-          />
+            <div className="mb-3">
+              <label className="form-label">Password</label>
+              <input
+                type="password"
+                className="form-control"
+                name="password"
+                value={password}
+                onChange={this.handleChange}
+                placeholder="Enter password"
+                required
+              />
+            </div>
 
-          <button type="submit">Register</button>
-        </form>
+            <button type="submit" className="btn btn-primary w-100">
+              Register
+            </button>
+          </form>
 
-        {message && <p>{message}</p>}
+          {message && (
+            <div
+              className={`alert mt-3 text-center ${
+                isSuccess ? "alert-success" : "alert-danger"
+              }`}
+            >
+              {message}
+            </div>
+          )}
 
-        <p>
-          Already registered? <Link to="/">Login</Link>
-        </p>
-      </div>
+          <p className="text-center mt-3">
+            Already registered?{" "}
+            <Link to="/" className="text-decoration-none">
+              Login
+            </Link>
+          </p>
+        </RegisterCard>
+      </RegisterWrapper>
     );
   }
 }
