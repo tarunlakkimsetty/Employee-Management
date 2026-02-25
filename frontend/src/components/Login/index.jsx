@@ -89,7 +89,7 @@ class Login extends Component {
             </div>
           )}
 
-          <p>
+          <p className="text-center mt-3">
             New user? <Link to="/register">Register</Link>
           </p>
         </LoginCard>

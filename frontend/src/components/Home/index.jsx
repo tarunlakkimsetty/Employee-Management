@@ -14,7 +14,9 @@ class Home extends Component {
     name: "",
     job: "",
     age: "",
-    email: ""
+    email: "",
+    showDeleteModal: false,
+    selectedEmployeeId: null
   };
 
 componentDidMount() {
@@ -55,10 +57,12 @@ updateEmployee = async () => {
   this.getEmployees();
 };
 
-deleteEmployee = async (id) => {
-  await fetch(`http://localhost:5000/employee/${id}`, {
+confirmDelete = async () => {
+  const { selectedEmployeeId } = this.state;
+  await fetch(`http://localhost:5000/employee/${selectedEmployeeId}`, {
     method: "DELETE"
   });
+  this.setState({ showDeleteModal: false, selectedEmployeeId: null });
 
   this.getEmployees();
 };
@@ -74,6 +78,24 @@ deleteEmployee = async (id) => {
       email: ""
     });
   };
+
+  // Open confirmation modal
+      openDeleteModal = (id) => {
+        this.setState({
+          showDeleteModal: true,
+          selectedEmployeeId: id
+        });
+      };
+
+      // Close modal
+      closeDeleteModal = () => {
+        this.setState({
+          showDeleteModal: false,
+          selectedEmployeeId: null
+        });
+      };
+
+   
 
   closeModal = () => {
     this.setState({ showModal: false });
@@ -191,7 +213,7 @@ deleteEmployee = async (id) => {
                       {/* DELETE BUTTON */}
                       <button
                         className="btn btn-outline-danger btn-sm"
-                        onClick={() => this.deleteEmployee(emp.id)}
+                        onClick={() => this.openDeleteModal(emp.id)}
                       >
                         <i className="bi bi-trash me-1"></i>
                         Delete
@@ -202,6 +224,28 @@ deleteEmployee = async (id) => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        {this.state.showDeleteModal && (
+          <div className="modal-overlay">
+            <div className="modal-box">
+              <h5>Are you sure?</h5>
+              <p>This employee will be deleted permanently.</p>
+
+              <button
+                className="btn btn-danger me-2"
+                onClick={this.confirmDelete}
+              >
+                Yes
+              </button>
+
+              <button
+                className="btn btn-secondary"
+                onClick={this.closeDeleteModal}
+              >
+                No
+              </button>
+            </div>
           </div>
         )}
 
