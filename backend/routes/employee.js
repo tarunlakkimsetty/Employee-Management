@@ -27,6 +27,29 @@ router.post("/add", async (req, res) => {
 });
 
 
+router.put("/update/:id", async (req, res) => {
+  try {
+    const updatedEmployee = await Employee.findOneAndUpdate(
+      { id: Number(req.params.id) },  // 🔥 search using custom id
+      req.body,
+      { returnDocument: "after" }
+    );
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: "Employee Not Found ❌" });
+    }
+
+    res.json({
+      message: "Employee Updated Successfully ✅",
+      updatedEmployee
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error Updating Employee ❌" });
+  }
+});
+
 // 🔹 GET ALL EMPLOYEES
 router.get("/", async (req, res) => {
   try {
@@ -41,11 +64,22 @@ router.get("/", async (req, res) => {
 // 🔹 DELETE EMPLOYEE
 router.delete("/:id", async (req, res) => {
   try {
-    await Employee.findByIdAndDelete(req.params.id);
-    res.json({ message: "Employee Deleted" });
-  } catch (error) {
-    res.status(500).json({ message: "Delete Failed" });
+    const { id } = req.params;
+
+    const deletedEmployee = await Employee.findOneAndDelete({ id });
+    // const deletedEmployee = await Employee.findByIdAndDelete(id);
+
+    if (!deletedEmployee) {
+      return res.status(404).json({ message: "Employee Not Found" });
+    }
+
+    res.json({ message: "Employee Deleted Successfully ✅" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Error Deleting Employee ❌" });
+    console.log(err)
   }
+  
 });
 
 module.exports = router;

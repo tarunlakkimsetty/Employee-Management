@@ -3,7 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const authRoutes = require("./routes/auth");
-
+const employee = require("./routes/employee");
 const app = express();
 const PORT = process.env.SERVER_PORT || 5000;
 
@@ -19,6 +19,7 @@ mongoose
 
 // Use Routes
 app.use("/", authRoutes);
+app.use("/employee", employee);
 
 // Start Server
 app.listen(PORT, () => {

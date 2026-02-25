@@ -17,6 +17,52 @@ class Home extends Component {
     email: ""
   };
 
+componentDidMount() {
+  this.getEmployees();
+}
+
+getEmployees = async () => {
+  const response = await fetch("http://localhost:5000/employee");
+  const data = await response.json();
+  this.setState({ employees: data });
+};
+
+addEmployee = async () => {
+  const { id, name, job, age, email } = this.state;
+
+  await fetch("http://localhost:5000/employee/add", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ id, name, job, age, email })
+  });
+
+  this.getEmployees(); // refresh list
+};
+
+updateEmployee = async () => {
+  const { id, name, job, age, email } = this.state;
+
+  await fetch(`http://localhost:5000/employee/update/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, job, age, email })
+  });
+
+  this.getEmployees();
+};
+
+deleteEmployee = async (id) => {
+  await fetch(`http://localhost:5000/employee/${id}`, {
+    method: "DELETE"
+  });
+
+  this.getEmployees();
+};
+
   openModal = () => {
     this.setState({
       showModal: true,
@@ -46,8 +92,10 @@ class Home extends Component {
       const updatedEmployees = [...employees];
       updatedEmployees[editIndex] = newEmployee;
       this.setState({ employees: updatedEmployees });
+      this.updateEmployee();
     } else {
       this.setState({ employees: [...employees, newEmployee] });
+      this.addEmployee();
     }
 
     this.closeModal();
@@ -67,10 +115,6 @@ class Home extends Component {
     });
   };
 
-  handleDelete = (index) => {
-    const filtered = this.state.employees.filter((_, i) => i !== index);
-    this.setState({ employees: filtered });
-  };
 
   handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -127,7 +171,7 @@ class Home extends Component {
               </thead>
               <tbody>
                 {employees.map((emp, index) => (
-                  <tr key={index}>
+                  <tr key={emp.id}>
                     <td>{emp.id}</td>
                     <td>{emp.name}</td>
                     <td>{emp.job}</td>
@@ -147,7 +191,7 @@ class Home extends Component {
                       {/* DELETE BUTTON */}
                       <button
                         className="btn btn-outline-danger btn-sm"
-                        onClick={() => this.handleDelete(index)}
+                        onClick={() => this.deleteEmployee(emp.id)}
                       >
                         <i className="bi bi-trash me-1"></i>
                         Delete
@@ -176,6 +220,7 @@ class Home extends Component {
                 onChange={this.handleChange}
                 placeholder="Employee ID"
                 className="form-control mb-2"
+                disabled={editIndex !== null}
               />
 
               <input
